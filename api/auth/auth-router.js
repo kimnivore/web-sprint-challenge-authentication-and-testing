@@ -7,19 +7,18 @@ const { checkUsernameExists, validateUsername, validateData } = require('../midd
 const { JWT_SECRET, BCRYPT_ROUNDS } = require('../secrets');
 
 
-router.post('/register', validateUsername, validateData, (req, res, next) => {
-  let user = req.body
-  const hash = bcrypt.hashSync(user.password, BCRYPT_ROUNDS)
-  user.password = hash 
-  Users.add(user)
+router.post('/register', validateUsername, validateData, async (req, res, next) => {
+  let { username, password } = req.body
+  const hash = bcrypt.hashSync(password, BCRYPT_ROUNDS)
+  Users.add({ username, password: hash })
     .then(newUser => {
       res.status(201).json(newUser)
     })
-    .catch(next)
+    .catch(next);
 });
 
 
-router.post('/login', checkUsernameExists, validateData, async (req, res, next) => {
+router.post('/login', checkUsernameExists, validateData, (req, res, next) => {
   let {username, password} = req.body
   Users.findBy({ username })
     .then((user) => {
