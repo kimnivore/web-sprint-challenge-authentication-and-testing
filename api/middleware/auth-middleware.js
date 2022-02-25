@@ -20,17 +20,12 @@ const validateUsername = async (req, res, next) => {
   }
 }
 
-const validateData = async (req, res, next) => {
-  try{
+const validateData = (req, res, next) => {
     const { username, password } = req.body;
     if(!username || !username.trim() || !password || !password.trim()) {
-      next({ status: 401, message: 'username and password required '});
-    } else {
-    return next()
+      next({ status: 400, message: 'username and password required '});
     }
-  } catch(err) {
-    next(err)
-  }
+    return next();
 }
 
 
