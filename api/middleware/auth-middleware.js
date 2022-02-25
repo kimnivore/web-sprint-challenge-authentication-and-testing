@@ -6,7 +6,7 @@ const checkUsernameExists = async (req, res, next) => {
     if(!user) {
       next({ status: 401, message: 'invalid credentials' })
     } else {
-      req.user = user
+    //   req.user = user
       next()
   }
 }
