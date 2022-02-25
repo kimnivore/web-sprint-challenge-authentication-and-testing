@@ -3,7 +3,7 @@ const jwt = require('jsonwebtoken');
 const Users = require('../users/users-model');
 
 const router = require('express').Router();
-const { checkUsernameExists, validateUsername, validateData } = require('../middleware/restricted');
+const { checkUsernameExists, validateUsername, validateData } = require('../middleware/auth-middleware');
 const { JWT_SECRET, BCRYPT_ROUNDS } = require('../secrets');
 
 
@@ -17,6 +17,39 @@ router.post('/register', validateUsername, validateData, (req, res, next) => {
     })
     .catch(next)
 });
+
+
+router.post('/login', checkUsernameExists, validateData, async (req, res, next) => {
+  let {username, password} = req.body
+  Users.findBy({ username })
+    .then((user) => {
+      if(bcrypt.compareSync(password, user[0].password)) {
+        const token = generateToken(user);
+        res.status(200).json({
+          message: `welcome, ${user[0].username}`,
+          token,
+        })
+      } else {
+        next({ status: 401, message: 'invalid credentials' });
+    }    
+    })
+    .catch(next)
+  });
+
+function generateToken(user) {
+  const payload = {
+    subject: user.id,
+    username: user.username,
+  }
+  const options = {
+    expiresIn: '1d'
+  }
+  return jwt.sign(payload, JWT_SECRET, options)
+}
+
+
+
+module.exports = router;
 
   /*
     IMPLEMENT
@@ -56,33 +89,7 @@ router.post('/register', validateUsername, validateData, (req, res, next) => {
       //   }
       // });
 
-router.post('/login', checkUsernameExists, validateData, (req, res, next) => {
-  let {username, password} = req.body
-  Users.findBy({ username })
-    .then((user) => {
-      if(bcrypt.compareSync(password, user[0].password)) {
-        const token = generateToken(user);
-        res.status(200).json({
-          message: `welcome, ${user[0].username}`,
-          token,
-        })
-      } else {
-        next({ status: 401, message: 'invalid credentials' });
-    }    
-    })
-    .catch(next)
-  });
 
-function generateToken(user) {
-  const payload = {
-    subject: user.id,
-    username: user.username,
-  }
-  const options = {
-    expiresIn: '1d'
-  }
-  return jwt.sign(payload, JWT_SECRET, options)
-}
   /*
     IMPLEMENT
     You are welcome to build additional middlewares to help with the endpoint's functionality.
@@ -106,6 +113,3 @@ function generateToken(user) {
     4- On FAILED login due to `username` not existing in the db, or `password` being incorrect,
       the response body should include a string exactly as follows: "invalid credentials".
   */
-
-
-module.exports = router;

@@ -10,12 +10,10 @@ module.exports = {
 
 function find() {
     return db('users')
-       // .select('id', 'username')
 }
 
 function findById(id) {
     return db('users')
-        //.select('id', 'username', 'password')
         .where('id', id)
         .first()
 }
