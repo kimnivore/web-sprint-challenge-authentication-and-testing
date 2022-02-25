@@ -15,7 +15,7 @@ function find() {
 
 function findById(id) {
     return db('users')
-        .select('id', 'username')
+        .select('id', 'username', 'password')
         .where('users.id', id)
         .first()
 }
