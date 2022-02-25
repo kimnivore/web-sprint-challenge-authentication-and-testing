@@ -44,11 +44,45 @@ router.post('/register', validateUsername, validateData, (req, res, next) => {
       the response body should include a string exactly as follows: "username taken".
   */
 
+      // router.post('/login', checkUsernameExists, validateData, (req, res, next) => {
+      //   if(bcrypt.compareSync(req.body.password, req.user.password)) {
+      //     const token = generateToken(req.user);
+      //     res.status(200).json({
+      //       message: `welcome, ${req.user.username}`,
+      //       token,
+      //     })
+      //   } else {
+      //     next({ status: 401, message: 'invalid credentials'})
+      //   }
+      // });
 
-router.post('/login', (req, res) => {
-  res.end('implement login, please!');
+router.post('/login', checkUsernameExists, validateData, (req, res, next) => {
+  let {username, password} = req.body
+  Users.findBy({ username })
+    .then((user) => {
+      if(bcrypt.compareSync(password, user[0].password)) {
+        const token = generateToken(user);
+        res.status(200).json({
+          message: `welcome, ${user[0].username}`,
+          token,
+        })
+      } else {
+        next({ status: 401, message: 'invalid credentials' });
+    }    
+    })
+    .catch(next)
+  });
 
-});
+function generateToken(user) {
+  const payload = {
+    subject: user.id,
+    username: user.username,
+  }
+  const options = {
+    expiresIn: '1d'
+  }
+  return jwt.sign(payload, JWT_SECRET, options)
+}
   /*
     IMPLEMENT
     You are welcome to build additional middlewares to help with the endpoint's functionality.
