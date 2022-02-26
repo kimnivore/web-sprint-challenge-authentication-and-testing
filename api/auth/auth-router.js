@@ -20,7 +20,7 @@ router.post('/register', validateUsername, validateData, async (req, res, next) 
 });
 
 
-router.post('/login', checkUsernameExists, validateData, (req, res, next) => {
+router.post('/login', validateData, (req, res, next) => {
   let {username, password} = req.body
   Users.findBy({ username })
     .then((user) => {
