@@ -14,11 +14,14 @@ router.post('/register', validateUsername, validateData, async (req, res, next) 
     .then(newUser => {
       res.status(201).json(newUser)
     })
-    .catch(next);
+    .catch(err => {
+      next(err)
+    })
 });
 
 
 router.post('/login', checkUsernameExists, validateData, (req, res, next) => {
+
   let {username, password} = req.body
   Users.findBy({ username })
     .then((user) => {

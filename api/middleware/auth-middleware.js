@@ -2,7 +2,7 @@ const Users = require('../users/users-model');
 
 
 const checkUsernameExists = async (req, res, next) => {
-    const user = await Users.findBy({ username: req.body.username })
+    const user = await Users.findBy({ username: req.body.username.trim() })
     if(!user) {
       next({ status: 401, message: 'invalid credentials' })
     } else {
@@ -25,8 +25,8 @@ const validateUsername = async (req, res, next) => {
 
 const validateData = (req, res, next) => {
     const { username, password } = req.body;
-    if(!username || !password || username === '' || username === null) {
-      res.status(401).json('username and password required')
+    if(!username || !password) {
+      res.status(400).json('username and password required')
     } else {
         next()
     }
