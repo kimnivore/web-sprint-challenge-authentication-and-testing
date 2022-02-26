@@ -3,7 +3,7 @@ const jwt = require('jsonwebtoken');
 const Users = require('../users/users-model');
 
 const router = require('express').Router();
-const { checkUsernameExists, validateUsername, validateData } = require('../middleware/auth-middleware');
+const { validateUsername, validateData } = require('../middleware/auth-middleware');
 const { JWT_SECRET, BCRYPT_ROUNDS } = require('../secrets');
 
 

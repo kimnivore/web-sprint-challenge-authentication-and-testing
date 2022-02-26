@@ -1,16 +1,6 @@
 const Users = require('../users/users-model');
 
 
-const checkUsernameExists = async (req, res, next) => {
-    const user = await Users.findBy({ username: req.body.username.trim() })
-    if(!user) {
-      next({ status: 401, message: 'invalid credentials' })
-    } else {
-      req.user = user
-      next()
-  }
-}
-
 const validateUsername = async (req, res, next) => {
     try {
         const users = await Users.findBy({ username: req.body.username })
@@ -34,7 +24,6 @@ const validateData = (req, res, next) => {
 
 
 module.exports = {
-  checkUsernameExists,
   validateUsername,
   validateData
 }
