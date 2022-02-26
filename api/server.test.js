@@ -41,7 +41,7 @@ describe('[POST] /api/auth/register', () => {
       let result = await request(server)
         .post('/api/auth/register')
         .send({ username: 'kim' });
-      expect(result.status).toBe(400);
+      expect(result.status).toBe(401);
   })
 })
   

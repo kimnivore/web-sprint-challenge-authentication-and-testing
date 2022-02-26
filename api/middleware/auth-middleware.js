@@ -13,15 +13,13 @@ const checkUsernameExists = async (req, res, next) => {
 
 const validateUsername = async (req, res, next) => {
     try {
-        const { username, password } = req.body;
-        if(!username || !password) {
-            next({ status: 400, message: 'username and password required' })
-        } else {
+        const users = await Users.findBy({ username: req.body.username })
+        if(!users.length) {
             next()
         }
-    }
-    catch(err) {
-        next(err)
+        else next({ status: 401, message: 'username taken' })
+    } catch (error) {
+        next(error)
     }
 }
 
